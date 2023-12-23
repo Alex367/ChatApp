@@ -1,0 +1,19 @@
+.settings_form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.2rem;
+}
+
+.settings_news{
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.btn_save{
+    width: 3rem;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}

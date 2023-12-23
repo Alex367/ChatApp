@@ -1,0 +1,9 @@
+.item_message{
+    display: flex;
+    gap: 1.2rem;
+    justify-content: space-between;
+}
+
+.item_message_username_letter span{
+    font-weight: bold;
+}

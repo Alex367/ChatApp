@@ -1,0 +1,18 @@
+.container_settings{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.settings_fields{
+    display: flex;
+    justify-content: space-evenly;
+    width: 50rem;
+    position: relative;
+}
+
+.settings_field_div{
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+}

@@ -1,0 +1,17 @@
+.navigation{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.navigation_items{
+    list-style-type: none;
+    display: flex;
+    gap: 1.2rem;
+}
+.navigation_items li a{
+    text-decoration: none;
+}
+.avatar_user{
+    width: 5rem;
+    height: 5rem;
+}
