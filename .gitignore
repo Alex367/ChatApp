@@ -27,3 +27,10 @@ frontend/my-app/.env.production.local
 backend/node_modules
 backend/nodemon.json
 frontend/.DS_Store
+
+# TESTS
+chat_testing/Results/*
+chat_testing/Resources/Data/*
+# Keep the folder Data
+!chat_testing/Resources/Data/.gitkeep
+/chat_testing/Testing_notes.*
