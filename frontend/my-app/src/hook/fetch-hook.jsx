@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { chatActions } from "../store/message_redux";
 
 const useFetchData = () => {
-    const [isError, setIsError] = useState({status: false, message: "", code: ""});
-
     const sendRequest = async (requestConfig, applyData) => {
         const response = await fetch(requestConfig.url, {
             method: requestConfig.method ? requestConfig.method : "GET",
@@ -13,18 +13,19 @@ const useFetchData = () => {
         });
 
         const data = await response.json();
-
+        
+        let isError = {};
         if (!response.ok) {
-            setIsError({status: true, message: data.message, code: response.status});
-            return;
+            isError = {status: true, message: data.message}
+        } else {
+            isError = {status: false}
         }
 
-        applyData(data);
+        applyData(data, isError);
     };
 
     return {
-        isError: isError,
-        sendRequest: sendRequest,
+        sendRequest,
     };
 };
 

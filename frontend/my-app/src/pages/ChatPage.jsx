@@ -14,7 +14,7 @@ export default function ChatPage() {
         (state) => state.doMessages.connectionStatus
     );
 
-    const { isError, sendRequest } = useFetchData();
+    const { sendRequest } = useFetchData();
 
     const dispatch = useDispatch();
 
@@ -49,14 +49,23 @@ export default function ChatPage() {
         };
     }, [connectedUser, dispatch]);
 
-    const transformData = (dataObj) => {
-        dispatch(chatActions.populateMessage(dataObj));
+    const transformData = (dataObj, isError) => {
+        if(isError.status){
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: isError.message,
+                })
+            );
+            return;
+        }
+        dispatch(chatActions.populateMessage(dataObj.data));
     };
 
     useEffect(() => {
         socket.on("receive_message", async (data) => {
             console.log("received");
-            const { dataCredentials, connectionStatus } = extractLocalStorage();
+            const { dataCredentials } = extractLocalStorage();
             sendRequest(
                 {
                     url: "http://localhost:8080/",
@@ -81,11 +90,6 @@ export default function ChatPage() {
             <h1>Chat Page</h1>
             <ChatForm isConnected={connectedUser} />
             <MessagesComponent isConnected={connectedUser} />
-            {isError.status && (
-                <div style={{ color: "red" }}>
-                    Error fetching data. Try to re-load the page
-                </div>
-            )}
         </div>
     );
 }

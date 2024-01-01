@@ -20,6 +20,7 @@ Negative Registration
     [Arguments]    ${REGISTRATION_URL}    ${USER}    ${ERROR}
     Inserting Registration Values    ${REGISTRATION_URL}    ${USER}
     RegistrationPage.Check Error Message    ${ERROR}
+    RegistrationPage.Check Page
 
 Inserting Registration Values
     [Arguments]    ${URL}    ${USER}

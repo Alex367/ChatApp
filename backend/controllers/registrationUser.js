@@ -53,8 +53,16 @@ exports.postRegistration = async (req, res, next) => {
     // Hash password
     const hashedPassword = await hash(password, 12);
 
+    // Role
+    let role;
+    if(username === "admin"){
+        role = "admin";
+    } else{
+        role = "guest"
+    }
+
     // Add to the DB
-    await collection.insertOne({ username, email, password: hashedPassword, avatar: 'uploads/images/default.jpg'});
+    await collection.insertOne({ username, email, password: hashedPassword, avatar: 'uploads/images/default.jpg', role});
 
     client.close();
 
@@ -62,8 +70,9 @@ exports.postRegistration = async (req, res, next) => {
     let token;
     try {
         token = jwt.sign({
-            username: username,
-            email: email,
+            username,
+            email,
+            role
         }, process.env.SECRET_TOKEN, { expiresIn: '1h' })
     } catch (err) {
         throw new Error('Something went wrong with the token');

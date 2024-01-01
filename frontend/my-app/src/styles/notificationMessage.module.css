@@ -1,0 +1,11 @@
+.notification_ul{
+    list-style-type: none;
+}
+
+.success{
+    color: green;
+}
+
+.failed{
+    color: red;
+}

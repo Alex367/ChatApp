@@ -1,12 +1,13 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import classes from "../styles/changePasswordForm.module.css";
+import { useDispatch } from "react-redux";
+import { chatActions } from "../store/message_redux";
 
 export default function ChangePasswordForm(props) {
-    const [isError, setIsError] = useState({ status: false, message: "" });
-    const [isChanged, setIsChanged] = useState(false);
-
     const oldPasswordInputRef = useRef();
     const newPasswordInputRef = useRef();
+
+    const dispatch = useDispatch();
 
     const changePasswordHandler = async (e) => {
         e.preventDefault();
@@ -14,6 +15,12 @@ export default function ChangePasswordForm(props) {
         const userCredentials = localStorage.getItem("userData");
         let dataCredentials = JSON.parse(userCredentials);
         if (!dataCredentials || !dataCredentials.token) {
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: "Something with authentification! Try again!",
+                })
+            );
             return;
         }
 
@@ -36,10 +43,19 @@ export default function ChangePasswordForm(props) {
 
         const data = await response.json();
         if (response.ok) {
-            console.log(data);
-            setIsChanged(true);
+            dispatch(
+                chatActions.setNofification({
+                    status: "Success",
+                    message: data.message,
+                })
+            );
         } else {
-            setIsError({ status: true, message: data.message });
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: data.message,
+                })
+            );
         }
     };
 
@@ -68,12 +84,6 @@ export default function ChangePasswordForm(props) {
                 </button>
                 <button type="submit">Confirm</button>
             </div>
-            {isError.status && (
-                <div style={{ color: "red" }}>{isError.message}</div>
-            )}
-            {isChanged && (
-                <div style={{ color: "green" }}>Password was changed</div>
-            )}
         </form>
     );
 }

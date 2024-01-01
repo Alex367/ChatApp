@@ -38,11 +38,14 @@ exports.postLogin = async (req, res, next) => {
     try {
         token = jwt.sign({
             username: existedUser.username,
-            email: email,
+            email,
+            role: existedUser.role
         }, process.env.SECRET_TOKEN, { expiresIn: '1h' })
     } catch (err) {
         throw new Error('Something went wrong with the token');
     }
 
-    res.status(201).json({ message: "Login successfully finished!", username: existedUser.username, token: token, avatar: existedUser.avatar });
+    res.status(201).json(
+        { message: "Login successfully finished!", username: existedUser.username, token: token, avatar: existedUser.avatar }
+    );
 };

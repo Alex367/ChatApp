@@ -13,9 +13,20 @@ exports.getAllMessages = async (req, res, next) => {
 
     const collection = await client.db("chat").collection("chatCollection");
     const data = await collection.find({}).toArray();
-    client.close();
 
-    res.status(201).json(data);
+    // we should return not only message but also userData
+    const collectionUserData = await client.db("chat").collection("userCollection");
+    const userInfo = await collectionUserData.findOne({ username: req.userData.user });
+    if (!userInfo) {
+        client.close();
+        res.status(422).json({ message: "Data was not found about the user" });
+        return;
+    }
+
+    const { password, _id: _, ...restUserInfo } = userInfo;
+
+    client.close();
+    res.status(201).json({ data, dataUser: restUserInfo });
 };
 
 exports.postMessage = async (req, res, next) => {
@@ -33,10 +44,11 @@ exports.postMessage = async (req, res, next) => {
 
     client.close();
 
-    res.status(200).json({ message: "Message was sent correctly" });
+    res.status(200).json({ message: "Message was sent" });
 };
 
 exports.deleteMessage = async (req, res, next) => {
+
     const { id_item, user_item } = req.body;
     const id = new ObjectId(id_item);
 
@@ -46,15 +58,7 @@ exports.deleteMessage = async (req, res, next) => {
     }
 
     const client = await connectToDatabase();
-    let collection;
-    try {
-        collection = await client.db("chat").collection("chatCollection");
-    } catch (err) {
-        res.status(500).json({ message: "Something went wrong with DB connection" });
-        client.close();
-        return;
-    }
-
+    const collection = client.db("chat").collection("chatCollection");
     await collection.deleteOne({ "_id": id });
     client.close();
     res.status(200).json({ message: "Message was removed correctly" });

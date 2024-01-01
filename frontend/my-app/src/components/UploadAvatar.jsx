@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import classes from "../styles/uploadAvatar.module.css";
 import { useEffect, useRef, useState } from "react";
 

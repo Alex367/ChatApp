@@ -16,7 +16,7 @@ User should be able to log in to the chat page
 
 User should not be able to log in to the chat page with incorrect format email
     [Documentation]    Negative log in Test    TC_2 - TS_1
-    [Tags]    Regression
+    [Tags]    Regression    try
     LoginApp.Login Incorrect Email    ${LOGIN_URL}    ${LOGIN_USER_2}
 
 User should be able to log out from the page

@@ -21,7 +21,6 @@ let usernameDefault = "";
 export default function SettingsEmaiUsernameForm() {
     const [isLoading, setIsLoading] = useState(true);
     const [isEditedCredentials, setIsEditedCredentials] = useState(false);
-    const [isError, setIsError] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -34,6 +33,12 @@ export default function SettingsEmaiUsernameForm() {
         const userCredentials = localStorage.getItem("userData");
         let dataCredentials = JSON.parse(userCredentials);
         if (!dataCredentials || !dataCredentials.token) {
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: "Something with authentification! Try again!",
+                })
+            );
             return;
         }
 
@@ -53,10 +58,13 @@ export default function SettingsEmaiUsernameForm() {
                 emailDefault = data.email;
                 usernameDefault = data.username;
             } else {
-                setIsError({
-                    status: true,
-                    message: data.message,
-                });
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Failed",
+                        message: "Something with loading data!",
+                    })
+                );
+                return;
             }
             setIsLoading(false);
         };
@@ -71,6 +79,12 @@ export default function SettingsEmaiUsernameForm() {
             const userCredentials = localStorage.getItem("userData");
             let dataCredentials = JSON.parse(userCredentials);
             if (!dataCredentials || !dataCredentials.token) {
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Failed",
+                        message: "Something with authentification! Try again!",
+                    })
+                );
                 return;
             }
 
@@ -111,17 +125,27 @@ export default function SettingsEmaiUsernameForm() {
                     })
                 );
 
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Success",
+                        message: "Changes were applied!",
+                    })
+                );
+                
+                emailDefault = data.email;
+                usernameDefault = data.username;
+
                 setIsEditedCredentials(false);
             } else {
-                setIsError({
-                    status: true,
-                    message: data.message,
-                });
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Failed",
+                        message: data.message,
+                    })
+                );
             }
         }
     };
-
-    console.log("bbb");
 
     if (isLoading) {
         return <p>Loading...</p>;
@@ -157,8 +181,6 @@ export default function SettingsEmaiUsernameForm() {
         }
     };
 
-    console.log("aaa");
-
     return (
         <form className={classes.settings_form} onSubmit={settingFormHandler}>
             <label>Email</label>
@@ -177,9 +199,6 @@ export default function SettingsEmaiUsernameForm() {
                 <button type="submit" className={classes.btn_save}>
                     Save
                 </button>
-            )}
-            {isError.status && (
-                <div style={{ color: "red" }}>{isError.message}</div>
             )}
         </form>
     );

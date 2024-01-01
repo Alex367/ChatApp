@@ -14,6 +14,7 @@ Login Incorrect Email
     [Arguments]    ${LOGIN_URL}    ${LOGIN_USER}
     Inserting Login Values    ${LOGIN_URL}    ${LOGIN_USER}
     LoginPage.Login Error   ${LOGIN_USER.Error}
+    LoginPage.Check Page
 
 Logout
     [Arguments]    ${LOGIN_URL}    ${LOGIN_USER}

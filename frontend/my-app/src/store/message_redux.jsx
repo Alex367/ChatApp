@@ -4,8 +4,8 @@ const initialState = {
     messages: [],
     logged: {},
     connectionStatus: false,
-    errorFetchChatData: false,
     avatarPath: "",
+    notificationValue: null,
 };
 
 const chatReduxFunctions = createSlice({
@@ -27,7 +27,6 @@ const chatReduxFunctions = createSlice({
         clearLogged(state) {
             state.logged = [];
             state.connectionStatus = false;
-            state.errorFetchChatData = false;
             state.avatarPath = "";
         },
         setConnectionStatus(state, action) {
@@ -46,11 +45,11 @@ const chatReduxFunctions = createSlice({
                 }
             }
         },
-        setErrorFetchChatData(state, action) {
-            state.errorFetchChatData = action.payload;
-        },
         populateAvatar(state, action) {
             state.avatarPath = action.payload;
+        },
+        setNofification(state, action) {
+            state.notificationValue = action.payload;
         },
     },
 });

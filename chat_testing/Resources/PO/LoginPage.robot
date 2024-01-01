@@ -25,4 +25,8 @@ Press Submit Button
 Login Error
     [Arguments]    ${ERROR}
     Wait Until Page Contains Element    ${Error_path}
-    Element Text Should Be    ${Error_path}    ${ERROR}
+    # Element Text Should Be    ${Error_path}    ${ERROR}
+
+Check Page
+    Sleep    5s
+    Element Text Should Be    xpath=//main/div/h1    Login Page

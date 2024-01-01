@@ -17,6 +17,6 @@ exports.CheckToken = (req, res, next) => {
         req.userData = { user: decodedToken.username };
         next();
     } catch (err) {
-        throw new Error('Authentication failed!');
+        throw new Error('Authentication failed!!!');
     }
 }

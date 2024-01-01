@@ -1,0 +1,15 @@
+footer{
+    position: absolute;
+    width: 100%;
+    background-color: var(--footer_bg);
+    color: var(--footer_color);
+    text-align: center;
+}
+
+.theme_img{
+    height: 1.2rem;
+    width: 1.2rem;
+}
+button{
+    cursor: pointer;
+}

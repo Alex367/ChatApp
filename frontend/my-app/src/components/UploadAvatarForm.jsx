@@ -6,20 +6,17 @@ import { chatActions } from "../store/message_redux";
 
 export default function UploadAvatarForm() {
     const [isSavedFile, setIsSavedFile] = useState();
-    const [isUploadValid, setIsUploadValid] = useState(true);
+    const [isUploadValid, setIsUploadValid] = useState();
 
     const dispatch = useDispatch();
 
     const avatarSubmitHandler = async (e) => {
         e.preventDefault();
-        console.log("Sent form");
 
-        const { dataCredentials, connectionStatus } = extractLocalStorage();
+        const { dataCredentials } = extractLocalStorage();
 
         const formData = new FormData();
-
         formData.append("file", isSavedFile);
-
         const response = await fetch("http://localhost:8080/settings/avatar", {
             method: "POST",
             body: formData,
@@ -30,7 +27,6 @@ export default function UploadAvatarForm() {
 
         const data = await response.json();
         if (response.ok) {
-            console.log("YES");
             // uploads/images/default.jpg
             const fullPath = "uploads/images/" + data.filename;
             dispatch(chatActions.populateAvatar(fullPath));
@@ -42,6 +38,12 @@ export default function UploadAvatarForm() {
     const uploadAvatarFormHandler = (items) => {
         setIsUploadValid(items.fileIsValid)
         if(!items.fileIsValid){
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: "Invalid file!",
+                })
+            );
             return;
         }
         setIsSavedFile(items.pickedFile);
@@ -50,8 +52,8 @@ export default function UploadAvatarForm() {
     return (
         <form onSubmit={avatarSubmitHandler}>
             <UploadAvatar onInput={uploadAvatarFormHandler} />
-            <button type="submit">Upload avatar</button>
-            {!isUploadValid && <p style={{ color: "red" }}>Error while uploading file...</p>}
+            {isUploadValid && <button type="submit">Upload avatar</button>}
+            {isUploadValid === false && <p style={{ color: "red" }}>Error while uploading file...</p>}
         </form>
     );
 }

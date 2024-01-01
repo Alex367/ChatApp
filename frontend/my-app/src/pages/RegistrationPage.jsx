@@ -14,9 +14,18 @@ export default function RegistrationPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { isError, sendRequest } = useFetchData();
+    const { sendRequest } = useFetchData();
 
-    const dataTransformation = async (dataObj) => {
+    const dataTransformation = async (dataObj, isError) => {
+        if(isError.status){
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: isError.message,
+                })
+            );
+            return;
+        }
         // Get all messages
         const getResponse = await fetch("http://localhost:8080/", {
             method: "GET",
@@ -25,11 +34,17 @@ export default function RegistrationPage() {
             },
         });
 
+        const messagesData = await getResponse.json();
         if (getResponse.ok) {
-            const messagesData = await getResponse.json();
-            dispatch(chatActions.populateMessage(messagesData));
+            dispatch(chatActions.populateMessage(messagesData.data));
         } else {
-            dispatch(chatActions.setErrorFetchChatData(true));
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: messagesData.message,
+                })
+            );
+            return;
         }
 
         localStorage.setItem(
@@ -44,6 +59,13 @@ export default function RegistrationPage() {
         );
         // Avatar
         dispatch(chatActions.populateAvatar(dataObj.avatar));
+
+        dispatch(
+            chatActions.setNofification({
+                status: "Success",
+                message: "Registration was finished successfully!",
+            })
+        );
 
         navigate("/");
     };
@@ -115,9 +137,6 @@ export default function RegistrationPage() {
                 />
                 <button type="submit">Submit</button>
             </form>
-            {isError.status && (
-                <div style={{ color: "red" }}>{isError.message}</div>
-            )}
         </div>
     );
 }

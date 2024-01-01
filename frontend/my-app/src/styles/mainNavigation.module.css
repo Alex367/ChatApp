@@ -10,6 +10,7 @@
 }
 .navigation_items li a{
     text-decoration: none;
+    color: var(--nav_color);
 }
 .avatar_user{
     width: 5rem;

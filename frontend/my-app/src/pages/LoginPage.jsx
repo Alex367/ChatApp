@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import classes from "../styles/login.module.css";
 import { useDispatch } from "react-redux";
 import { chatActions } from "../store/message_redux";
@@ -12,21 +12,36 @@ export default function LoginPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { isError, sendRequest } = useFetchData();
+    const { sendRequest } = useFetchData();
 
-    const transformData = async (dataObj) => {
+    const transformData = async (dataObj, isError) => {
+        if(isError.status){
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: isError.message,
+                })
+            );
+            return;
+        }
         const getResponse = await fetch("http://localhost:8080/", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${dataObj.token}`,
             },
         });
-
+        
+        const messagesData = await getResponse.json();
         if (getResponse.ok) {
-            const messagesData = await getResponse.json();
-            dispatch(chatActions.populateMessage(messagesData));
+            dispatch(chatActions.populateMessage(messagesData.data));
         } else {
-            dispatch(chatActions.setErrorFetchChatData(true));
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: messagesData.message,
+                })
+            );
+            return;
         }
 
         localStorage.setItem(
@@ -41,7 +56,14 @@ export default function LoginPage() {
         );
         // Avatar
         dispatch(chatActions.populateAvatar(dataObj.avatar));
-        
+
+        dispatch(
+            chatActions.setNofification({
+                status: "Success",
+                message: "Log in was successfull",
+            })
+        );
+
         navigate("/");
     };
 
@@ -89,9 +111,6 @@ export default function LoginPage() {
                 />
                 <button type="submit">Submit</button>
             </form>
-            {isError.status && (
-                <div style={{ color: "red" }}>{isError.message}</div>
-            )}
         </div>
     );
 }

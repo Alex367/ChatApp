@@ -1,0 +1,4 @@
+.app_container{
+    position: relative;
+    background-color: var(--body_background);
+}

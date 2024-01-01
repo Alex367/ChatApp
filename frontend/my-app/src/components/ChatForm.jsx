@@ -2,27 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import classes from "../styles/chatForm.module.css";
 
 import { socket } from "../socket";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { chatActions } from "../store/message_redux";
 
 export default function CharForm(props) {
     const textInputValue = useRef();
     const [isSending, setIsSending] = useState(false);
-    const [isError, setIsError] = useState({ status: false, message: "" });
 
-    const fetchDataError = useSelector(
-        (state) => state.doMessages.errorFetchChatData
-    );
-
-    useEffect(() => {
-        console.log("hide error");
-        let time;
-        if (isError.status) {
-            time = setTimeout(() => {
-                setIsError({ status: false, message: "" });
-            }, 2000);
-        }
-        return () => clearTimeout(time);
-    }, [isError]);
+    const dispatch = useDispatch();
 
     const formHandler = async (e) => {
         e.preventDefault();
@@ -31,17 +18,25 @@ export default function CharForm(props) {
         const textInput = textInputValue.current.value;
 
         if (textInput.length === 0) {
-            setIsError({
-                status: true,
-                message: "Message length should be > 0",
-            });
+            dispatch(
+                chatActions.setNofification({
+                    status: "Failed",
+                    message: "Message length should be > 0",
+                })
+            );
             setIsSending(false);
             return;
         } else {
             let dataStorage = localStorage.getItem("userData");
             dataStorage = JSON.parse(dataStorage);
             if (!dataStorage || !dataStorage.token) {
-                console.log("Error!");
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Failed",
+                        message:
+                            "Something with authentification. Try to log in again.",
+                    })
+                );
                 return;
             }
 
@@ -59,14 +54,22 @@ export default function CharForm(props) {
 
             console.log("sended");
 
+            const data = await response.json();
             if (response.ok) {
-                const data = await response.json();
-                console.log(data.message);
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Success",
+                        message: data.message,
+                    })
+                );
             } else {
-                setIsError({
-                    status: true,
-                    message: "Something with sending a message!",
-                });
+                dispatch(
+                    chatActions.setNofification({
+                        status: "Failed",
+                        message: data.message,
+                    })
+                );
+                return;
             }
 
             socket
@@ -80,7 +83,6 @@ export default function CharForm(props) {
                     }
                 );
             textInputValue.current.value = "";
-            setIsError({ status: false, message: "" });
         }
     };
 
@@ -97,8 +99,6 @@ export default function CharForm(props) {
             <button type="submit" disabled={isSending || !props.isConnected}>
                 Send
             </button>
-            {isError && <div style={{ color: "red" }}>{isError.message}</div>}
-            {fetchDataError && <div style={{ color: "red" }}>Loading data error, try to refresh page.</div>}
         </form>
     );
 }

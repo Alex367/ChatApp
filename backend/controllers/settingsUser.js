@@ -7,7 +7,7 @@ exports.getUserInfo = async (req, res, next) => {
     const client = await connectToDatabase();
     const collection = await client.db("chat").collection("userCollection");
 
-    const userInfo = await collection.findOne({ username: req.userData.user });
+    const userInfo = await collection.findOne({ username:  req.userData.user});
     if (!userInfo) {
         client.close();
         res.status(422).json({ message: "Data was not found about the user" });
@@ -21,6 +21,11 @@ exports.getUserInfo = async (req, res, next) => {
 exports.patchUserInfo = async (req, res, next) => {
 
     const { email, username } = req.body;
+
+    if (!email || !username || !email.includes("@") || username.toUpperCase() === "ADMIN") {
+        res.status(422).json({ message: "Something went wrong. Try again." });
+        return;
+    }
 
     const client = await connectToDatabase();
     const collection = await client.db("chat").collection("userCollection");
@@ -51,6 +56,7 @@ exports.patchUserInfo = async (req, res, next) => {
         token = jwt.sign({
             username: username,
             email: email,
+            role: "guest"
         }, process.env.SECRET_TOKEN, { expiresIn: '1h' })
     } catch (err) {
         throw new Error('Something went wrong with the token');
@@ -80,6 +86,7 @@ exports.sendAvatar = async (req, res, next) => {
         res.status(422).json({ message: "Data was not found about the user" });
         return;
     }
+
     const newAvatarPath = "uploads/images/" + req.file.filename;
     await collection.updateOne(
         { username: req.userData.user },
